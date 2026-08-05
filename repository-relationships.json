@@ -29,7 +29,7 @@
     "contains_non_public_inventory": false,
     "digest": "sha256:800e0dbaaaab6e091a3e25c34fb1855298b6db0ec6051c130cb3f4fd9dbca857",
     "path": "owners/hypeblitz.json",
-    "repository": "ORESoftware/project-registry"
+    "repository": "approved-private-registry"
   },
   "relationships": [],
   "repositories": [
