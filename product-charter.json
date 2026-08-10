@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "organization": "hypeblitz",
+  "canonical_linear_project": "github.com/hypeblitz",
+  "status": "unresolved",
+  "evidence": {
+    "product_definition": null,
+    "intended_users": [],
+    "concrete_workflows": [],
+    "measurable_outcomes": [],
+    "non_goals": [],
+    "data_classes": [],
+    "identity_and_authorization": null,
+    "external_providers": [],
+    "trust_boundaries": [],
+    "retention_and_privacy": null,
+    "abuse_cases": [],
+    "operational_risks": [],
+    "source_links": []
+  },
+  "bootstrap": {
+    "application_repositories_allowed": false,
+    "permitted_repositories": [
+      "hypeblitz/.github"
+    ],
+    "reason": "DEN-1871 remains unresolved; do not infer product scope or bootstrap application repositories from the organization name."
+  },
+  "vertical_slices": []
+}
