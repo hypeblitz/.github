@@ -1,0 +1,65 @@
+name: product charter gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Validate fail-closed product charter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m json.tool product-charter.json >/dev/null
+          python3 <<'PY'
+          import json
+          from pathlib import Path
+
+          charter = json.loads(Path("product-charter.json").read_text())
+          assert charter["schema_version"] == 1
+          assert charter["organization"] == "hypeblitz"
+          assert charter["canonical_linear_project"] == "github.com/hypeblitz"
+          assert charter["status"] in {"unresolved", "reviewed"}
+
+          evidence = charter["evidence"]
+          bootstrap = charter["bootstrap"]
+          slices = charter["vertical_slices"]
+
+          if charter["status"] == "unresolved":
+              assert bootstrap["application_repositories_allowed"] is False
+              assert bootstrap["permitted_repositories"] == ["hypeblitz/.github"]
+              assert slices == []
+          else:
+              assert bootstrap["application_repositories_allowed"] is True
+              required_lists = (
+                  "intended_users",
+                  "concrete_workflows",
+                  "measurable_outcomes",
+                  "non_goals",
+                  "data_classes",
+                  "trust_boundaries",
+                  "abuse_cases",
+                  "operational_risks",
+                  "source_links",
+              )
+              assert isinstance(evidence["product_definition"], str) and evidence["product_definition"].strip()
+              assert isinstance(evidence["identity_and_authorization"], str) and evidence["identity_and_authorization"].strip()
+              assert isinstance(evidence["retention_and_privacy"], str) and evidence["retention_and_privacy"].strip()
+              for key in required_lists:
+                  assert isinstance(evidence[key], list) and evidence[key], key
+              assert isinstance(slices, list) and slices
+              for item in slices:
+                  assert all(isinstance(item.get(key), str) and item[key].strip() for key in ("name", "user", "workflow", "outcome", "verification"))
+          PY
+          git diff --check
